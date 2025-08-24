@@ -4,7 +4,7 @@ import { Wallet, HDNodeWallet } from 'ethers';
 
 import type { WalletObject } from "~/types";
 
-const { copy, copied } = useClipboard();
+const { copy } = useClipboard();
 const toast = useToast();
 
 let hdNode: HDNodeWallet;
@@ -13,7 +13,26 @@ const addresses = ref<WalletObject[]>([]);
 let currentIndex = ref(0);
 
 const generated = ref(true);
+const copiedStates = ref<Record<string, boolean>>({});
+
 const showPrivateKey = ref(false)
+
+function copyToClipboard(text: string, key: string) {
+  copy(text);
+  copiedStates.value[key] = true;
+
+  const { start } = useTimeoutFn(() => {
+    copiedStates.value[key] = false;
+  }, 2000);
+
+  start();
+
+  toast.add({
+    title: 'Copied to clipboard',
+    description: 'Your key has been copied to clipboard!',
+    color: 'success',
+  });
+}
 
 async function generateWallet() {
   if (seedPhrase.value === '') {
@@ -96,8 +115,10 @@ function addWallet() {
           <p class="font-medium">Please never share the following secret recovery phrase with anyone.</p>
 
           <UButton
-              icon="material-symbols:content-copy"
+              :color="copiedStates['seedphrase'] ? 'success' : 'neutral'"
+              :icon="copiedStates['seedphrase'] ? 'material-symbols:copy-all' : 'material-symbols:content-copy'"
               size="xl"
+              @click="copyToClipboard(seedPhrase, 'seedphrase')"
           >
             Copy
           </UButton>
@@ -121,9 +142,10 @@ function addWallet() {
 
     <div class="grid grid-cols-2 gap-4">
       <UCard
-        v-for="(address, index) in addresses"
+          v-for="(address, walletIndex) in addresses"
+          :key="walletIndex"
       >
-        <h2 class="text-xl font-bold">Wallet {{ index + 1 }}</h2>
+        <h2 class="text-xl font-bold">Wallet {{ walletIndex + 1 }}</h2>
 
         <p class="font-medium text-neutral-300 mt-2">Public Key</p>
         <UInput
@@ -133,12 +155,12 @@ function addWallet() {
           <template #trailing>
             <UTooltip text="Copy to clipboard" :content="{ side: 'right' }">
               <UButton
-                  :color="copied ? 'success' : 'neutral'"
+                  :color="copiedStates[`address-${walletIndex}`] ? 'success' : 'neutral'"
                   variant="link"
                   size="sm"
-                  :icon="copied ? 'material-symbols:copy-all' : 'material-symbols:content-copy'"
+                  :icon="copiedStates[`address-${walletIndex}`] ? 'material-symbols:copy-all' : 'material-symbols:content-copy'"
                   aria-label="Copy to clipboard"
-                  @click="copy(address.address)"
+                  @click="copyToClipboard(address.address, `address-${walletIndex}`)"
               />
             </UTooltip>
           </template>
@@ -153,12 +175,12 @@ function addWallet() {
           <template #trailing>
             <UTooltip text="Copy to clipboard" :content="{ side: 'right' }">
               <UButton
-                  :color="copied ? 'success' : 'neutral'"
+                  :color="copiedStates[`privatekey-${walletIndex}`] ? 'success' : 'neutral'"
                   variant="link"
                   size="sm"
-                  :icon="copied ? 'material-symbols:copy-all' : 'material-symbols:content-copy'"
+                  :icon="copiedStates[`privatekey-${walletIndex}`] ? 'material-symbols:copy-all' : 'material-symbols:content-copy'"
                   aria-label="Copy to clipboard"
-                  @click="copy(address.privateKey)"
+                  @click="copyToClipboard(address.privateKey, `privatekey-${walletIndex}`)"
               />
             </UTooltip>
           </template>

@@ -13,8 +13,10 @@ const isDark = computed({
   <nav class="my-8">
     <UContainer class="flex justify-between">
       <div class="flex items-center-safe">
-        <Icon name="material-symbols:account-balance-wallet-outline" class="text-4xl font-bold"/>
-        <h1 class="text-3xl font-bold ml-2">Syūta</h1>
+        <NuxtLink to="/" class="flex">
+          <Icon name="material-symbols:account-balance-wallet-outline" class="text-4xl font-bold"/>
+          <h1 class="text-3xl font-bold ml-2">Syūta</h1>
+        </NuxtLink>
         <UBadge color="primary" class="font-bold ml-1">v0.1</UBadge>
       </div>
 

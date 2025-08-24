@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@nuxt/icon": "^2.0.0",
+    "@nuxt/ui": "^3.3.2",
+    "@nuxtjs/color-mode": "^3.5.2",
     "nuxt": "^4.0.3",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"

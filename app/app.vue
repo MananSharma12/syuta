@@ -1,4 +1,9 @@
 <template>
-  <div>
-  </div>
+  <UApp>
+    <AppHeader/>
+    <NuxtPage/>
+    <AppFooter/>
+  </UApp>
 </template>
+<script setup lang="ts">
+</script>
